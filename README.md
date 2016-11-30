@@ -1,28 +1,16 @@
-# Brunch + Babel/ES6
+# form-progress
+A form completion progress tool. Any progress, any design, just some attributes and you are ready to go!
 
-This is a modern JS skeleton for [Brunch](http://brunch.io).
+## The work is going
 
-## Installation
+The library is very unstable now and not tested yet. I am working on it. 
+Every day i am adding new features and fixing the buggs.
 
-Clone this repo manually or use `brunch new dir -s brunch/with-es6`
+## Plan
 
-## Getting started
+I think in a week it will be ready to use in am most simple cases with simple forms.
+Then i will create a page with examples
+And after proper testing i will add it to `npm` and `bower`
 
-* Install (if you don't have them):
-    * [Node.js](http://nodejs.org): `brew install node` on OS X
-    * [Brunch](http://brunch.io): `npm install -g brunch`
-    * Brunch plugins and app dependencies: `npm install`
-* Run:
-    * `brunch watch --server` — watches the project with continuous rebuild. This will also launch HTTP server with [pushState](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history).
-    * `brunch build --production` — builds minified project for production
-* Learn:
-    * `public/` dir is fully auto-generated and served by HTTP server.  Write your code in `app/` dir.
-    * Place static files you want to be copied from `app/assets/` to `public/`.
-    * [Brunch site](http://brunch.io), [Getting started guide](https://github.com/brunch/brunch-guide#readme)
-
-## ES7
-
-To use proposed JS features not included into ES6, do this:
-
-* `npm install --save-dev babel-preset-stage-0`
-* in `brunch-config.js`, add the preset: `presets: ['es2015', 'stage-0']`
+## License
+[MIT](https://www.tldrlegal.com/l/mit) Copyright (c) 2016 Dima Beznos
