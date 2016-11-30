@@ -1,14 +1,12 @@
 ;(function(){
-  
-  function formProgress(settings) {
-    var form = settings.form;
-    var progressEl = settings.progressEl;
-    var inputTypes = settings.inputTypes;
-    var proggressAttr = settings.proggressAttr;
-    var unit = settings.unit;
 
-    var progressStep = 100 / (form.length - 1);
-    var currentProgress = 0;
+  function formProgress(settings) {
+
+    const { form, progressEl, proggressAttr, unit } = settings;
+    let { inputTypes } = settings;
+
+    const progressStep = 100 / (form.length - 1);
+    let currentProgress = 0;
 
     // make all input types lowercase
     inputTypes = inputTypes.map(function(type){
@@ -16,12 +14,11 @@
     });
 
     // improve with bubbling, one callback to the form
-    [].forEach.call(form, function(input){
-      
+    [].forEach.call(form, (input) => {
       if (inputTypes.indexOf(input.tagName.toLowerCase()) != -1) {
 
         // increase progress
-        input.oninput = function() {
+        input.addEventListener('input', function() {
           if (this.value.length !== 0 && !this.progressChecked) {
             currentProgress += progressStep;
 
@@ -42,9 +39,9 @@
 
             this.progressChecked = false;
           }
-        }
-      }
+        });
 
+      }
     });
   }
 
