@@ -3,13 +3,13 @@ A form completion progress tool. Any progress, any design, just some attributes 
 
 ## The work is going
 
-The library is very unstable now and not tested yet. I am working on it. 
+The library is very unstable now and not tested yet. I am working on it. <br/>
 Every day i am adding new features and fixing the buggs.
 
 ## Plan
 
-I think in a week it will be ready to use in am most simple cases with simple forms.
-Then i will create a page with examples
+I think in a week it will be ready to use in am most simple cases with simple forms. <br/>
+Then i will create a page with examples <br/>
 And after proper testing i will add it to `npm` and `bower`
 
 ## License
