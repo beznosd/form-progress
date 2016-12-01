@@ -3,7 +3,7 @@ A form completion progress tool. Any progress, any design, just some attributes 
 
 ## The work is going
 
-**form-progress** now works with input type *text* and with *textarea*
+**form-progress** now works with input type *text* and with *textarea* <br/>
 The library is very unstable now and not tested yet. I am working on it. <br/>
 Every day i am adding new features and fixing the buggs.
 
