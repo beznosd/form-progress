@@ -1,7 +1,5 @@
-;(function(){
-
-  function formProgress(settings) {
-
+;(function() {
+  const formProgress = (settings) => {
     const { form, progressEl, proggressAttr, unit } = settings;
     let { inputTypes } = settings;
 
@@ -14,7 +12,7 @@
     });
 
     form.addEventListener('input', (evt) => {
-      let input = evt.target;
+      const input = evt.target;
 
       // increase progress
       if (input.value.length !== 0 && !input.progressChecked) {
@@ -38,9 +36,7 @@
         input.progressChecked = false;
       }
     });
-
-  }
+  };
 
   window.formProgress = formProgress;
-
 }());

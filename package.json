@@ -19,6 +19,11 @@
     "brunch": "^2.4.0",
     "clean-css-brunch": "^2.0.0",
     "css-brunch": "^2.0.0",
+    "eslint": "^3.9.1",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-plugin-import": "^2.1.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.5.0",
     "javascript-brunch": "^2.0.0",
     "uglify-js-brunch": "^2.0.0"
   }
