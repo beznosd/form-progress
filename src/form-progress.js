@@ -1,6 +1,27 @@
 ;(function() {
   const formProgress = (settings) => {
-    const { form, progressEl, proggressAttr, unit } = settings;
+    let { 
+      form,
+      progressEl, 
+      proggressAttr,
+      proggressStyleProperty,
+      initialValue,
+      maxValue,
+      minValie,
+      unit,
+      valueContainer
+    } = settings;
+
+    form = form || '#progress-form';
+    progressEl = progressEl || '#progress-element';
+    proggressAttr = proggressAttr || 'style';
+    proggressStyleProperty = proggressStyleProperty || 'width';
+    initialValue = initialValue || 0;
+    maxValue = maxValue || 100;
+    minValie = minValie || 0;
+    unit = unit || '%';
+    valueContainer = valueContainer || null;
+
     let { inputTypes } = settings;
 
     const progressStep = 100 / (form.length - 1);
