@@ -1,6 +1,6 @@
 # form-progress
-A form completion progress plugin. Without any dependencies. Your progress and your design. Any limitations.<br/>
-All you need to do, is pass css selector of your form element and progress element to a simple function and you are ready to go!
+A form completion progress plugin. Without any dependencies. Your progress and your design. Any limitations!<br/>
+Just pass css selector of your form and progress element to a simple function and you are ready to go!
 
 ## The work is going
 
