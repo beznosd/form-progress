@@ -1,5 +1,5 @@
 ;(function() {
-  const formProgress = (settings) => {
+  const formProgress = (settings = {}) => {
     let { 
       form,
       inputTypes,
@@ -9,7 +9,7 @@
       proggressStyleProperty,
       initialValue,
       maxValue,
-      unit,
+      units,
     } = settings;
 
     /*
@@ -22,7 +22,7 @@
     proggressStyleProperty = proggressStyleProperty || 'width';
     initialValue = +initialValue || 0;
     maxValue = +maxValue || 100;
-    unit = unit || '%';
+    units = units || '%';
 
     form = document.querySelector(formSelector);
     progress = document.querySelector(progressSelector);
@@ -40,8 +40,8 @@
     if (!inputTypes) {
       inputTypes = [
         'text', 'email', 'password', 'number', 'color', 
-        'date', 'datetime', 'month', 'time', 'range', 
-        'tel', 'search', 'url', 'week'
+        'date', 'datetime', 'month', 'time', 'week', 
+        'tel', 'search', 'url', 'range'
       ];
     } else {
       // make all input types lowercase
@@ -72,8 +72,11 @@
       }
     });
 
-    const progressStep = maxValue / formLength;
+    console.log(formLength);
+    const progressStep = (maxValue - initialValue) / formLength;
     let currentProgress = initialValue;
+
+    progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
 
     /*
     * handling the form events
@@ -82,34 +85,32 @@
     // adding listener for text format inputs
     if (formElements.indexOf('input') !== -1 || formElements.indexOf('textarea') !== -1) {
       form.addEventListener('input', (evt) => {
-        const input = evt.target;
+        let input = null;
+        if (evt.target.tagName === 'TEXTAREA' || inputTypes.indexOf(evt.target.type) !== -1) {
+          input = evt.target;
+        }    
+        if (!input) return;
+        
+        // increase progress
+        if (input.value.length !== 0 && !input.progressChecked) {
+          currentProgress += progressStep;
 
-        if (inputTypes.indexOf(input.type) !== -1 || formElements.indexOf('textarea') !== -1) {
-          // increase progress
-          if (input.value.length !== 0 && !input.progressChecked) {
-            currentProgress += progressStep;
+          progress[proggressAttr][proggressStyleProperty] = currentProgress + units;              
 
-            progress[proggressAttr][proggressStyleProperty] = currentProgress + unit;              
+          input.progressChecked = true;
+        }
 
-            input.progressChecked = true;
-          }
+        // decrease progress
+        if (input.value.length === 0 && input.progressChecked) {
+          currentProgress -= progressStep;
 
-          // decrease progress
-          if (input.value.length === 0 && input.progressChecked) {
-            currentProgress -= progressStep;
+          progress[proggressAttr][proggressStyleProperty] = currentProgress + units;              
 
-            progress[proggressAttr][proggressStyleProperty] = currentProgress + unit;              
-
-            input.progressChecked = false;
-          }
+          input.progressChecked = false;
         }
       }); // end form.addEventListener for input
     } // end form elements check
   }; // end formProgress
-
-  function arrayToLowerCase(arr) {
-    return arr.map(item => item.toLowerCase());
-  }
 
   window.formProgress = formProgress;
 }());
