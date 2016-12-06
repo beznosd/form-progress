@@ -10,6 +10,7 @@
       initialValue,
       maxValue,
       units,
+      additionalElementsToTrack
     } = settings;
 
     /*
@@ -54,6 +55,20 @@
       // make all input types lowercase
       formElements = formElements.map(item => item.toLowerCase());
     }
+  
+    // handle aditional elements and separate them to changeable and inputtable
+    let changeableAdditinalElments = [];
+    let inputtableAdditinalElments = [];
+    if (additionalElementsToTrack) {
+      additionalElementsToTrack.forEach((selector) => {
+        const elements = form.querySelectorAll(selector);
+        if (elements[0].type === 'checkbox') {
+          changeableAdditinalElments = changeableAdditinalElments.concat(...elements);
+        } else {
+          inputtableAdditinalElments = inputtableAdditinalElments.concat(...elements);
+        }
+      });
+    }
 
     /*
     *  calculating the initial values 
@@ -71,6 +86,11 @@
         formLength += form.querySelectorAll(formElement).length;
       }
     });
+    if (additionalElementsToTrack) {
+      additionalElementsToTrack.forEach((element) => {
+        formLength += form.querySelectorAll(element).length;
+      });
+    }
 
     const progressStep = (maxValue - initialValue) / formLength;
     let currentProgress = initialValue;
@@ -82,12 +102,12 @@
     */
     
     // adding listener for text format inputs
-    if (formElements.indexOf('input') !== -1 || formElements.indexOf('textarea') !== -1) {
+    if (formElements.indexOf('input') > -1 || formElements.indexOf('textarea') > -1) {
       form.addEventListener('input', (evt) => {
         let input = null;
-        if (evt.target.tagName === 'TEXTAREA' || inputTypes.indexOf(evt.target.type) !== -1) {
+        if (evt.target.tagName === 'TEXTAREA' || inputTypes.indexOf(evt.target.type) > -1) {
           input = evt.target;
-        }    
+        }
         if (!input) return;
         
         // increase progress
@@ -104,14 +124,23 @@
       }); // end text format inputs
 
       // adding support for checkbox and radio
-      if (formElements.indexOf('input') !== -1 && inputTypes.indexOf('checkbox') !== -1) {
+      // preventing attaching event if we have not checkboxes and changeableAdditinalElments 
+      if (formElements.indexOf('input') > -1 
+        && (inputTypes.indexOf('checkbox') > -1 || changeableAdditinalElments.length)) {
         form.addEventListener('change', (evt) => {
           let input = null;
-          if (evt.target.type === 'checkbox') {
+          // handle checkboxex
+          if (inputTypes.indexOf('checkbox') > -1 && evt.target.type === 'checkbox') {
             input = evt.target;
           }
+          // handle aditional elements checkboxes
+          if (changeableAdditinalElments.indexOf(evt.target) > -1) {
+            input = evt.target;
+          }
+          
           if (!input) return;
-           // increase progress
+
+          // increase progress
           if (input.checked && !input.progressChecked) {
             increaseProgress();
             input.progressChecked = true;
