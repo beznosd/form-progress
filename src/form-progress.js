@@ -72,7 +72,6 @@
       }
     });
 
-    console.log(formLength);
     const progressStep = (maxValue - initialValue) / formLength;
     let currentProgress = initialValue;
 
@@ -93,24 +92,52 @@
         
         // increase progress
         if (input.value.length !== 0 && !input.progressChecked) {
-          currentProgress += progressStep;
-
-          progress[proggressAttr][proggressStyleProperty] = currentProgress + units;              
-
+          increaseProgress();
           input.progressChecked = true;
         }
 
         // decrease progress
         if (input.value.length === 0 && input.progressChecked) {
-          currentProgress -= progressStep;
-
-          progress[proggressAttr][proggressStyleProperty] = currentProgress + units;              
-
+          decreaseProgress();
           input.progressChecked = false;
         }
-      }); // end form.addEventListener for input
+      }); // end text format inputs
+
+      // adding support for checkbox and radio
+      if (formElements.indexOf('input') !== -1 && inputTypes.indexOf('checkbox') !== -1) {
+        form.addEventListener('change', (evt) => {
+          let input = null;
+          if (evt.target.type === 'checkbox') {
+            input = evt.target;
+          }
+          if (!input) return;
+           // increase progress
+          if (input.checked && !input.progressChecked) {
+            increaseProgress();
+            input.progressChecked = true;
+          }
+
+          // decrease progress
+          if (!input.checked && input.progressChecked) {
+            decreaseProgress();
+            input.progressChecked = false;
+          }
+          // console.log(evt.target);
+        });
+      }
     } // end form elements check
+
+    function increaseProgress() {
+      currentProgress += progressStep;
+      progress[proggressAttr][proggressStyleProperty] = currentProgress + units;              
+    }
+
+    function decreaseProgress() {
+      currentProgress -= progressStep;
+      progress[proggressAttr][proggressStyleProperty] = currentProgress + units;              
+    }
   }; // end formProgress
+
 
   window.formProgress = formProgress;
 }());

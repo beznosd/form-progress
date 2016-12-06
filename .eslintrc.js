@@ -15,6 +15,7 @@ module.exports = {
 		"no-console": "off",
 		"no-param-reassign": "off",
 		"no-case-declarations": "off",
+    "no-use-before-define": "off",
 		"comma-dangle": "off",
 		"no-plusplus": "off",
 		"arrow-parens": 'off',
