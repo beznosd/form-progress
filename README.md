@@ -32,5 +32,6 @@ I think in a week it will be ready to use in most simple cases with simple forms
 Docs examples of usage will be added soon. <br>
 After a proper testing i will *form-progress* to `npm` and `bower`
 
+
 ## License
 [MIT](https://www.tldrlegal.com/l/mit) Copyright (c) 2016 Dima Beznos
