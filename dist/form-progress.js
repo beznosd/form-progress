@@ -109,12 +109,17 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     */
 
     // adding listener for text format inputs
-    if (formElements.indexOf('input') > -1 || formElements.indexOf('textarea') > -1) {
+    if (formElements.indexOf('input') > -1 || formElements.indexOf('textarea') > -1 || inputtableAdditinalElments.length) {
       form.addEventListener('input', function (evt) {
         var input = null;
         if (evt.target.tagName === 'TEXTAREA' || inputTypes.indexOf(evt.target.type) > -1) {
           input = evt.target;
         }
+        // handle aditional elements checkboxes
+        if (inputtableAdditinalElments.indexOf(evt.target) > -1) {
+          input = evt.target;
+        }
+
         if (!input) return;
 
         // increase progress
@@ -131,7 +136,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       }); // end text format inputs
 
       // adding support for checkbox and radio
-      // preventing attaching event if we have not checkboxes and changeableAdditinalElments 
+      // preventing of attaching event if we have not checkboxes and changeableAdditinalElments 
       if (formElements.indexOf('input') > -1 && (inputTypes.indexOf('checkbox') > -1 || changeableAdditinalElments.length)) {
         form.addEventListener('change', function (evt) {
           var input = null;
