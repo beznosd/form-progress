@@ -23,9 +23,7 @@ Every day i am adding new features and fixing the buggs.
 * range 
 * tel
 * url
-
 * checbox
-
 * textarea
 
 ## Plan
