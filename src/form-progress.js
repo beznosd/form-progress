@@ -62,13 +62,22 @@
     if (additionalElementsToTrack) {
       additionalElementsToTrack.forEach((selector) => {
         const elements = form.querySelectorAll(selector);
-        if (elements[0].type === 'checkbox') {
-          changeableAdditinalElments = changeableAdditinalElments.concat(...elements);
-        } else {
-          inputtableAdditinalElments = inputtableAdditinalElments.concat(...elements);
-        }
+        // console.log(elements);
+        elements.forEach((element) => {
+          // console.log(element);
+          if (element.type === 'checkbox') {
+            changeableAdditinalElments = changeableAdditinalElments.concat(...elements);
+          } else {
+            inputtableAdditinalElments = inputtableAdditinalElments.concat(...elements);
+          }
+        });
       });
     }
+
+    // console.log(changeableAdditinalElments);
+    // console.log(inputtableAdditinalElments);
+    // console.log(formElements);
+    // console.log(inputTypes);
 
     /*
     *  calculating the initial values 
@@ -77,24 +86,39 @@
     // find the count of all elements and inputs which we need to track
     // console.log( form.querySelectorAll('textarea').length );
     let formLength = 0;
-    formElements.forEach((formElement) => {
-      if (formElement === 'input') {
+    let existingElements = [];
+    formElements.forEach((formElementType) => {
+      if (formElementType === 'input') {
         inputTypes.forEach((item) => {
-          formLength += form.querySelectorAll(`input[type="${item}"]`).length;
+          const elements = form.querySelectorAll(`input[type="${item}"]`);
+          existingElements = existingElements.concat(...elements);
+          formLength += elements.length;
         });
       } else {
-        formLength += form.querySelectorAll(formElement).length;
+        const elements = form.querySelectorAll(formElementType);
+        existingElements = existingElements.concat(...elements);
+        formLength += elements.length;
       }
     });
+
+    // if aditional elements matches default input types, do not increase formLength
     if (additionalElementsToTrack) {
-      additionalElementsToTrack.forEach((element) => {
-        formLength += form.querySelectorAll(element).length;
+      const aditionalElements = [...changeableAdditinalElments, ...inputtableAdditinalElments];
+      let aditionalElementsCount = aditionalElements.length;
+
+      aditionalElements.forEach((aditionalElement) => {
+        if (existingElements.indexOf(aditionalElement) > -1) {
+          aditionalElementsCount--;
+        }
       });
+
+      formLength += aditionalElementsCount;
     }
 
     const progressStep = (maxValue - initialValue) / formLength;
     let currentProgress = initialValue;
 
+    // initializing progress with initial value, by default 0
     progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
 
     /*
@@ -107,7 +131,10 @@
         || inputtableAdditinalElments.length) {
       form.addEventListener('input', (evt) => {
         let input = null;
-        if (evt.target.tagName === 'TEXTAREA' || inputTypes.indexOf(evt.target.type) > -1) {
+        if (inputTypes.indexOf(evt.target.type) > -1) {
+          input = evt.target;
+        }
+        if (formElements.indexOf('textarea') > -1 && evt.target.tagName === 'TEXTAREA') {
           input = evt.target;
         }
         // handle aditional elements checkboxes
@@ -125,6 +152,8 @@
 
         // decrease progress
         if (input.value.length === 0 && input.progressChecked) {
+          // console.log(input.value.length);
+          // console.log(input.progressChecked);
           decreaseProgress();
           input.progressChecked = false;
         }
@@ -158,18 +187,23 @@
             decreaseProgress();
             input.progressChecked = false;
           }
-          // console.log(evt.target);
         });
       }
     } // end form elements check
 
     function increaseProgress() {
       currentProgress += progressStep;
+      if (currentProgress > maxValue) {
+        currentProgress = maxValue;
+      }
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;              
     }
 
     function decreaseProgress() {
       currentProgress -= progressStep;
+      if (currentProgress < initialValue) {
+        currentProgress = initialValue;
+      }
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;              
     }
   }; // end formProgress

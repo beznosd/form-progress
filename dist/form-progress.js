@@ -65,17 +65,26 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     if (additionalElementsToTrack) {
       additionalElementsToTrack.forEach(function (selector) {
         var elements = form.querySelectorAll(selector);
-        if (elements[0].type === 'checkbox') {
-          var _changeableAdditinalE;
+        // console.log(elements);
+        elements.forEach(function (element) {
+          // console.log(element);
+          if (element.type === 'checkbox') {
+            var _changeableAdditinalE;
 
-          changeableAdditinalElments = (_changeableAdditinalE = changeableAdditinalElments).concat.apply(_changeableAdditinalE, _toConsumableArray(elements));
-        } else {
-          var _inputtableAdditinalE;
+            changeableAdditinalElments = (_changeableAdditinalE = changeableAdditinalElments).concat.apply(_changeableAdditinalE, _toConsumableArray(elements));
+          } else {
+            var _inputtableAdditinalE;
 
-          inputtableAdditinalElments = (_inputtableAdditinalE = inputtableAdditinalElments).concat.apply(_inputtableAdditinalE, _toConsumableArray(elements));
-        }
+            inputtableAdditinalElments = (_inputtableAdditinalE = inputtableAdditinalElments).concat.apply(_inputtableAdditinalE, _toConsumableArray(elements));
+          }
+        });
       });
     }
+
+    // console.log(changeableAdditinalElments);
+    // console.log(inputtableAdditinalElments);
+    // console.log(formElements);
+    // console.log(inputTypes);
 
     /*
     *  calculating the initial values 
@@ -84,24 +93,45 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     // find the count of all elements and inputs which we need to track
     // console.log( form.querySelectorAll('textarea').length );
     var formLength = 0;
-    formElements.forEach(function (formElement) {
-      if (formElement === 'input') {
+    var existingElements = [];
+    formElements.forEach(function (formElementType) {
+      if (formElementType === 'input') {
         inputTypes.forEach(function (item) {
-          formLength += form.querySelectorAll('input[type="' + item + '"]').length;
+          var _existingElements;
+
+          var elements = form.querySelectorAll('input[type="' + item + '"]');
+          existingElements = (_existingElements = existingElements).concat.apply(_existingElements, _toConsumableArray(elements));
+          formLength += elements.length;
         });
       } else {
-        formLength += form.querySelectorAll(formElement).length;
+        var _existingElements2;
+
+        var elements = form.querySelectorAll(formElementType);
+        existingElements = (_existingElements2 = existingElements).concat.apply(_existingElements2, _toConsumableArray(elements));
+        formLength += elements.length;
       }
     });
+
+    // if aditional elements matches default input types, do not increase formLength
     if (additionalElementsToTrack) {
-      additionalElementsToTrack.forEach(function (element) {
-        formLength += form.querySelectorAll(element).length;
-      });
+      (function () {
+        var aditionalElements = [].concat(_toConsumableArray(changeableAdditinalElments), _toConsumableArray(inputtableAdditinalElments));
+        var aditionalElementsCount = aditionalElements.length;
+
+        aditionalElements.forEach(function (aditionalElement) {
+          if (existingElements.indexOf(aditionalElement) > -1) {
+            aditionalElementsCount--;
+          }
+        });
+
+        formLength += aditionalElementsCount;
+      })();
     }
 
     var progressStep = (maxValue - initialValue) / formLength;
     var currentProgress = initialValue;
 
+    // initializing progress with initial value, by default 0
     progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
 
     /*
@@ -112,7 +142,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     if (formElements.indexOf('input') > -1 || formElements.indexOf('textarea') > -1 || inputtableAdditinalElments.length) {
       form.addEventListener('input', function (evt) {
         var input = null;
-        if (evt.target.tagName === 'TEXTAREA' || inputTypes.indexOf(evt.target.type) > -1) {
+        if (inputTypes.indexOf(evt.target.type) > -1) {
+          input = evt.target;
+        }
+        if (formElements.indexOf('textarea') > -1 && evt.target.tagName === 'TEXTAREA') {
           input = evt.target;
         }
         // handle aditional elements checkboxes
@@ -130,6 +163,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
         // decrease progress
         if (input.value.length === 0 && input.progressChecked) {
+          // console.log(input.value.length);
+          // console.log(input.progressChecked);
           decreaseProgress();
           input.progressChecked = false;
         }
@@ -162,18 +197,23 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             decreaseProgress();
             input.progressChecked = false;
           }
-          // console.log(evt.target);
         });
       }
     } // end form elements check
 
     function increaseProgress() {
       currentProgress += progressStep;
+      if (currentProgress > maxValue) {
+        currentProgress = maxValue;
+      }
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
     }
 
     function decreaseProgress() {
       currentProgress -= progressStep;
+      if (currentProgress < initialValue) {
+        currentProgress = initialValue;
+      }
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
     }
   }; // end formProgress
