@@ -42,7 +42,7 @@
       inputTypes = [
         'text', 'email', 'password', 'number', 'color', 
         'date', 'datetime', 'month', 'time', 'week', 
-        'tel', 'search', 'url', 'range'
+        'tel', 'search', 'url', 'range', 'checkbox'
       ];
     } else {
       // make all input types lowercase
@@ -62,10 +62,9 @@
     if (additionalElementsToTrack) {
       additionalElementsToTrack.forEach((selector) => {
         const elements = form.querySelectorAll(selector);
-        // console.log(elements);
+        console.log(elements);
         elements.forEach((element) => {
-          // console.log(element);
-          if (element.type === 'checkbox') {
+          if (element.type === 'checkbox' || element.type === 'radio') {
             changeableAdditinalElments = changeableAdditinalElments.concat(...elements);
           } else {
             inputtableAdditinalElments = inputtableAdditinalElments.concat(...elements);
@@ -80,19 +79,31 @@
     // console.log(inputTypes);
 
     /*
-    *  calculating the initial values 
+    *  calculating the progress step
     */
 
     // find the count of all elements and inputs which we need to track
     // console.log( form.querySelectorAll('textarea').length );
     let formLength = 0;
     let existingElements = [];
+
+    const radiosNames = [];
     formElements.forEach((formElementType) => {
       if (formElementType === 'input') {
-        inputTypes.forEach((item) => {
-          const elements = form.querySelectorAll(`input[type="${item}"]`);
+        inputTypes.forEach((inputType) => {
+          const elements = form.querySelectorAll(`input[type="${inputType}"]`);
           existingElements = existingElements.concat(...elements);
-          formLength += elements.length;
+          // consider radios only with differnet name attributes
+          if (inputType === 'radio') {
+            elements.forEach((radioElement) => {
+              if (radiosNames.indexOf(radioElement.name) === -1) {
+                formLength++;
+                radiosNames.push(radioElement.name);
+              }
+            });
+          } else {
+            formLength += elements.length;
+          }
         });
       } else {
         const elements = form.querySelectorAll(formElementType);
@@ -160,18 +171,34 @@
       }); // end text format inputs
 
       // adding support for checkbox and radio
-      // preventing of attaching event if we have not checkboxes and changeableAdditinalElments 
+      const checkedRadiosNames = [];
+      // preventing of attaching event if we have not changeable elements 
       if (formElements.indexOf('input') > -1 
-          && (inputTypes.indexOf('checkbox') > -1 || changeableAdditinalElments.length)) {
+          || changeableAdditinalElments.length) {
         form.addEventListener('change', (evt) => {
           let input = null;
-          // handle checkboxex
+
           if (inputTypes.indexOf('checkbox') > -1 && evt.target.type === 'checkbox') {
             input = evt.target;
           }
-          // handle aditional elements checkboxes
+
+          if (inputTypes.indexOf('radio') > -1 && evt.target.type === 'radio') {
+            if (checkedRadiosNames.indexOf(evt.target.name) === -1) {
+              input = evt.target;
+              checkedRadiosNames.push(evt.target.name);
+            }
+          }
+
+          // handle aditional elements checkboxes and radios
           if (changeableAdditinalElments.indexOf(evt.target) > -1) {
-            input = evt.target;
+            if (evt.target.type === 'radio') {
+              if (checkedRadiosNames.indexOf(evt.target.name) === -1) {
+                checkedRadiosNames.push(evt.target.name);
+                input = evt.target;
+              }
+            } else {
+              input = evt.target;
+            }
           }
           
           if (!input) return;
@@ -186,6 +213,12 @@
           if (!input.checked && input.progressChecked) {
             decreaseProgress();
             input.progressChecked = false;
+            if (evt.target.type === 'radio') {
+              const index = checkedRadiosNames.indexOf(evt.target.name);
+              if (index > 1) {
+                checkedRadiosNames.splice(index, 1);
+              }
+            }
           }
         });
       }

@@ -42,7 +42,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     }
 
     if (!inputTypes) {
-      inputTypes = ['text', 'email', 'password', 'number', 'color', 'date', 'datetime', 'month', 'time', 'week', 'tel', 'search', 'url', 'range'];
+      inputTypes = ['text', 'email', 'password', 'number', 'color', 'date', 'datetime', 'month', 'time', 'week', 'tel', 'search', 'url', 'range', 'checkbox'];
     } else {
       // make all input types lowercase
       inputTypes = inputTypes.map(function (item) {
@@ -65,10 +65,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     if (additionalElementsToTrack) {
       additionalElementsToTrack.forEach(function (selector) {
         var elements = form.querySelectorAll(selector);
-        // console.log(elements);
+        console.log(elements);
         elements.forEach(function (element) {
-          // console.log(element);
-          if (element.type === 'checkbox') {
+          if (element.type === 'checkbox' || element.type === 'radio') {
             var _changeableAdditinalE;
 
             changeableAdditinalElments = (_changeableAdditinalE = changeableAdditinalElments).concat.apply(_changeableAdditinalE, _toConsumableArray(elements));
@@ -87,21 +86,33 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     // console.log(inputTypes);
 
     /*
-    *  calculating the initial values 
+    *  calculating the progress step
     */
 
     // find the count of all elements and inputs which we need to track
     // console.log( form.querySelectorAll('textarea').length );
     var formLength = 0;
     var existingElements = [];
+
+    var radiosNames = [];
     formElements.forEach(function (formElementType) {
       if (formElementType === 'input') {
-        inputTypes.forEach(function (item) {
+        inputTypes.forEach(function (inputType) {
           var _existingElements;
 
-          var elements = form.querySelectorAll('input[type="' + item + '"]');
+          var elements = form.querySelectorAll('input[type="' + inputType + '"]');
           existingElements = (_existingElements = existingElements).concat.apply(_existingElements, _toConsumableArray(elements));
-          formLength += elements.length;
+          // consider radios only with differnet name attributes
+          if (inputType === 'radio') {
+            elements.forEach(function (radioElement) {
+              if (radiosNames.indexOf(radioElement.name) === -1) {
+                formLength++;
+                radiosNames.push(radioElement.name);
+              }
+            });
+          } else {
+            formLength += elements.length;
+          }
         });
       } else {
         var _existingElements2;
@@ -140,65 +151,89 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
     // adding listener for text format inputs
     if (formElements.indexOf('input') > -1 || formElements.indexOf('textarea') > -1 || inputtableAdditinalElments.length) {
-      form.addEventListener('input', function (evt) {
-        var input = null;
-        if (inputTypes.indexOf(evt.target.type) > -1) {
-          input = evt.target;
-        }
-        if (formElements.indexOf('textarea') > -1 && evt.target.tagName === 'TEXTAREA') {
-          input = evt.target;
-        }
-        // handle aditional elements checkboxes
-        if (inputtableAdditinalElments.indexOf(evt.target) > -1) {
-          input = evt.target;
-        }
-
-        if (!input) return;
-
-        // increase progress
-        if (input.value.length !== 0 && !input.progressChecked) {
-          increaseProgress();
-          input.progressChecked = true;
-        }
-
-        // decrease progress
-        if (input.value.length === 0 && input.progressChecked) {
-          // console.log(input.value.length);
-          // console.log(input.progressChecked);
-          decreaseProgress();
-          input.progressChecked = false;
-        }
-      }); // end text format inputs
-
-      // adding support for checkbox and radio
-      // preventing of attaching event if we have not checkboxes and changeableAdditinalElments 
-      if (formElements.indexOf('input') > -1 && (inputTypes.indexOf('checkbox') > -1 || changeableAdditinalElments.length)) {
-        form.addEventListener('change', function (evt) {
+      (function () {
+        form.addEventListener('input', function (evt) {
           var input = null;
-          // handle checkboxex
-          if (inputTypes.indexOf('checkbox') > -1 && evt.target.type === 'checkbox') {
+          if (inputTypes.indexOf(evt.target.type) > -1) {
+            input = evt.target;
+          }
+          if (formElements.indexOf('textarea') > -1 && evt.target.tagName === 'TEXTAREA') {
             input = evt.target;
           }
           // handle aditional elements checkboxes
-          if (changeableAdditinalElments.indexOf(evt.target) > -1) {
+          if (inputtableAdditinalElments.indexOf(evt.target) > -1) {
             input = evt.target;
           }
 
           if (!input) return;
 
           // increase progress
-          if (input.checked && !input.progressChecked) {
+          if (input.value.length !== 0 && !input.progressChecked) {
             increaseProgress();
             input.progressChecked = true;
           }
 
           // decrease progress
-          if (!input.checked && input.progressChecked) {
+          if (input.value.length === 0 && input.progressChecked) {
+            // console.log(input.value.length);
+            // console.log(input.progressChecked);
             decreaseProgress();
             input.progressChecked = false;
           }
-        });
-      }
+        }); // end text format inputs
+
+        // adding support for checkbox and radio
+        var checkedRadiosNames = [];
+        // preventing of attaching event if we have not changeable elements 
+        if (formElements.indexOf('input') > -1 || changeableAdditinalElments.length) {
+          form.addEventListener('change', function (evt) {
+            var input = null;
+
+            if (inputTypes.indexOf('checkbox') > -1 && evt.target.type === 'checkbox') {
+              input = evt.target;
+            }
+
+            if (inputTypes.indexOf('radio') > -1 && evt.target.type === 'radio') {
+              if (checkedRadiosNames.indexOf(evt.target.name) === -1) {
+                input = evt.target;
+                checkedRadiosNames.push(evt.target.name);
+              }
+            }
+
+            // handle aditional elements checkboxes and radios
+            if (changeableAdditinalElments.indexOf(evt.target) > -1) {
+              if (evt.target.type === 'radio') {
+                if (checkedRadiosNames.indexOf(evt.target.name) === -1) {
+                  checkedRadiosNames.push(evt.target.name);
+                  input = evt.target;
+                }
+              } else {
+                input = evt.target;
+              }
+            }
+
+            if (!input) return;
+
+            // increase progress
+            if (input.checked && !input.progressChecked) {
+              increaseProgress();
+              input.progressChecked = true;
+            }
+
+            // decrease progress
+            if (!input.checked && input.progressChecked) {
+              decreaseProgress();
+              input.progressChecked = false;
+              if (evt.target.type === 'radio') {
+                var index = checkedRadiosNames.indexOf(evt.target.name);
+                if (index > 1) {
+                  checkedRadiosNames.splice(index, 1);
+                }
+              }
+            }
+          });
+        }
+      })();
     } // end form elements check
 
     function increaseProgress() {
