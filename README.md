@@ -14,8 +14,8 @@ Every day i am adding new features and fixing the buggs.
 * password
 * file
 * radio
-* checkbox
 * select
+* checkbox
 * textarea
 * number
 * search

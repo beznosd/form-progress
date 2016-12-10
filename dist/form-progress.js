@@ -79,6 +79,11 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       });
     }
 
+    // console.log(changeableAdditinalElments);
+    // console.log(inputtableAdditinalElments);
+    // console.log(formElements);
+    // console.log(inputTypes);
+
     /*
     *  calculating the progress step
     */
@@ -221,14 +226,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             if (!input) return;
 
             // increase progress
-            if (input.checked && !input.progressChecked) {
+            if (input.checked && !input.progressChecked && !isFile && !isSelect) {
               increaseProgress();
               input.progressChecked = true;
-              return;
             }
 
             // decrease progress
-            if (!input.checked && input.progressChecked) {
+            if (!input.checked && input.progressChecked && !isFile && !isSelect) {
               decreaseProgress();
               input.progressChecked = false;
               if (evt.target.type === 'radio') {
@@ -237,14 +241,18 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                   checkedRadiosNames.splice(index, 1);
                 }
               }
-              return;
             }
 
-            // handle selects and files
+            // handle selects
             if (isSelect || isFile) {
-              if (input.value.length) {
+              console.dir(input);
+              if (input.value.length && !input.progressChecked) {
                 increaseProgress();
                 input.progressChecked = true;
+              }
+              if (!input.value.length && input.progressChecked) {
+                decreaseProgress();
+                input.progressChecked = false;
               }
             }
           });
