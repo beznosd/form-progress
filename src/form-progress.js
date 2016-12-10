@@ -8,6 +8,7 @@
       proggressAttr,
       proggressStyleProperty,
       initialValue,
+      minValue,
       maxValue,
       units,
       additionalElementsToTrack
@@ -22,11 +23,17 @@
     proggressAttr = proggressAttr || 'style';
     proggressStyleProperty = proggressStyleProperty || 'width';
     initialValue = +initialValue || 0;
+    minValue = +minValue || 0;
     maxValue = +maxValue || 100;
     units = units || '%';
 
     form = document.querySelector(formSelector);
     progress = document.querySelector(progressSelector);
+
+    if (minValue >= maxValue) {
+      console.error('minValue should be lower than maxValue');
+      return;
+    }
 
     if (!form) {
       console.error(`Can\'t get the form element by selector: ${formSelector}`);
@@ -55,6 +62,12 @@
     } else {
       // make all input types lowercase
       formElements = formElements.map(item => item.toLowerCase());
+      // if user has provided formElements and not provided 'input' element
+      // then we remove all input types, because user don't want to track default inputs
+      // but plugin will still track inputs that was provided in setting 'additionalElementsToTrack'
+      if (formElements.indexOf('input') < 0) {
+        inputTypes = [];
+      }
     }
   
     // handle aditional elements and separate them to changeable and inputtable
@@ -72,11 +85,6 @@
         });
       });
     }
-
-    // console.log(changeableAdditinalElments);
-    // console.log(inputtableAdditinalElments);
-    // console.log(formElements);
-    // console.log(inputTypes);
 
     /*
     *  calculating the progress step
@@ -125,9 +133,49 @@
 
       formLength += aditionalElementsCount;
     }
+    
+    // calculate progress step for different cases
+    let progressStep = 0;
+    if (minValue < 0 && maxValue > 0) {
+      progressStep = (maxValue + Math.abs(minValue)) / formLength;
+    } else if (minValue >= 0 && maxValue > 0) {
+      progressStep = (maxValue - minValue) / formLength;
+    } else if (minValue < 0 && maxValue <= 0) {
+      progressStep = (Math.abs(maxValue) - Math.abs(minValue)) / formLength;
+    }
 
-    const progressStep = (maxValue - initialValue) / formLength;
-    let currentProgress = initialValue;
+    // calculate initial value, depends on already filled form elements
+    let allElements = [];
+    if (additionalElementsToTrack) {
+      allElements = [...changeableAdditinalElments, ...inputtableAdditinalElments];
+    }
+    allElements = [...allElements, ...existingElements];
+
+    const trackedElements = [];
+    const checkedRadiosNames = [];
+    let filledElementsCount = 0;
+    for (let i = 0; i < allElements.length; i++) {
+      const element = allElements[i];
+
+      if (trackedElements.indexOf(element) > -1) continue; 
+      trackedElements.push(element);
+      
+      if (element.type === 'checkbox' || element.type === 'radio') {
+        if (element.checked) {
+          filledElementsCount++;
+          element.progressChecked = true;
+          if (element.type === 'radio') {
+            checkedRadiosNames.push(element.name);
+          }
+        }
+      } else if (element.value.length !== 0) {
+        filledElementsCount++;
+        element.progressChecked = true;
+      }
+    }
+
+    // set up current progress
+    let currentProgress = (filledElementsCount > 0) ? filledElementsCount * progressStep : minValue;
 
     // initializing progress with initial value, by default 0
     progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
@@ -171,7 +219,6 @@
       }); // end text format inputs
 
       // adding support for checkbox and radio
-      const checkedRadiosNames = [];
       // preventing of attaching event if we have not changeable elements 
       if (formElements.indexOf('input') > -1 
           || formElements.indexOf('select') > -1 

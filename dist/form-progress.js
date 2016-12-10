@@ -12,6 +12,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         proggressAttr = settings.proggressAttr,
         proggressStyleProperty = settings.proggressStyleProperty,
         initialValue = settings.initialValue,
+        minValue = settings.minValue,
         maxValue = settings.maxValue,
         units = settings.units,
         additionalElementsToTrack = settings.additionalElementsToTrack;
@@ -25,11 +26,17 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     proggressAttr = proggressAttr || 'style';
     proggressStyleProperty = proggressStyleProperty || 'width';
     initialValue = +initialValue || 0;
+    minValue = +minValue || 0;
     maxValue = +maxValue || 100;
     units = units || '%';
 
     form = document.querySelector(formSelector);
     progress = document.querySelector(progressSelector);
+
+    if (minValue >= maxValue) {
+      console.error('minValue should be lower than maxValue');
+      return;
+    }
 
     if (!form) {
       console.error('Can\'t get the form element by selector: ' + formSelector);
@@ -57,6 +64,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       formElements = formElements.map(function (item) {
         return item.toLowerCase();
       });
+      // if user has provided formElements and not provided 'input' element
+      // then we remove all input types, because user don't want to track default inputs
+      // but plugin will still track inputs that was provided in setting 'additionalElementsToTrack'
+      if (formElements.indexOf('input') < 0) {
+        inputTypes = [];
+      }
     }
 
     // handle aditional elements and separate them to changeable and inputtable
@@ -78,11 +91,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         });
       });
     }
-
-    // console.log(changeableAdditinalElments);
-    // console.log(inputtableAdditinalElments);
-    // console.log(formElements);
-    // console.log(inputTypes);
 
     /*
     *  calculating the progress step
@@ -138,8 +146,48 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       })();
     }
 
-    var progressStep = (maxValue - initialValue) / formLength;
-    var currentProgress = initialValue;
+    // calculate progress step for different cases
+    var progressStep = 0;
+    if (minValue < 0 && maxValue > 0) {
+      progressStep = (maxValue + Math.abs(minValue)) / formLength;
+    } else if (minValue >= 0 && maxValue > 0) {
+      progressStep = (maxValue - minValue) / formLength;
+    } else if (minValue < 0 && maxValue <= 0) {
+      progressStep = (Math.abs(maxValue) - Math.abs(minValue)) / formLength;
+    }
+
+    // calculate initial value, depends on already filled form elements
+    var allElements = [];
+    if (additionalElementsToTrack) {
+      allElements = [].concat(_toConsumableArray(changeableAdditinalElments), _toConsumableArray(inputtableAdditinalElments));
+    }
+    allElements = [].concat(_toConsumableArray(allElements), _toConsumableArray(existingElements));
+
+    var trackedElements = [];
+    var checkedRadiosNames = [];
+    var filledElementsCount = 0;
+    for (var i = 0; i < allElements.length; i++) {
+      var element = allElements[i];
+
+      if (trackedElements.indexOf(element) > -1) continue;
+      trackedElements.push(element);
+
+      if (element.type === 'checkbox' || element.type === 'radio') {
+        if (element.checked) {
+          filledElementsCount++;
+          element.progressChecked = true;
+          if (element.type === 'radio') {
+            checkedRadiosNames.push(element.name);
+          }
+        }
+      } else if (element.value.length !== 0) {
+        filledElementsCount++;
+        element.progressChecked = true;
+      }
+    }
+
+    // set up current progress
+    var currentProgress = filledElementsCount > 0 ? filledElementsCount * progressStep : minValue;
 
     // initializing progress with initial value, by default 0
     progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
@@ -150,114 +198,111 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
     // adding listener for text format inputs
     if (formElements.indexOf('input') > -1 || formElements.indexOf('textarea') > -1 || inputtableAdditinalElments.length) {
-      (function () {
-        form.addEventListener('input', function (evt) {
+      form.addEventListener('input', function (evt) {
+        var input = null;
+        if (inputTypes.indexOf(evt.target.type) > -1) {
+          input = evt.target;
+        }
+        if (formElements.indexOf('textarea') > -1 && evt.target.tagName === 'TEXTAREA') {
+          input = evt.target;
+        }
+        // handle aditional elements checkboxes
+        if (inputtableAdditinalElments.indexOf(evt.target) > -1) {
+          input = evt.target;
+        }
+
+        if (!input) return;
+
+        // increase progress
+        if (input.value.length !== 0 && !input.progressChecked) {
+          increaseProgress();
+          input.progressChecked = true;
+        }
+
+        // decrease progress
+        if (input.value.length === 0 && input.progressChecked) {
+          // console.log(input.value.length);
+          // console.log(input.progressChecked);
+          decreaseProgress();
+          input.progressChecked = false;
+        }
+      }); // end text format inputs
+
+      // adding support for checkbox and radio
+      // preventing of attaching event if we have not changeable elements 
+      if (formElements.indexOf('input') > -1 || formElements.indexOf('select') > -1 || changeableAdditinalElments.length) {
+        form.addEventListener('change', function (evt) {
           var input = null;
-          if (inputTypes.indexOf(evt.target.type) > -1) {
+
+          if (inputTypes.indexOf('checkbox') > -1 && evt.target.type === 'checkbox') {
             input = evt.target;
           }
-          if (formElements.indexOf('textarea') > -1 && evt.target.tagName === 'TEXTAREA') {
-            input = evt.target;
+
+          if (inputTypes.indexOf('radio') > -1 && evt.target.type === 'radio') {
+            if (checkedRadiosNames.indexOf(evt.target.name) === -1) {
+              input = evt.target;
+              checkedRadiosNames.push(evt.target.name);
+            }
           }
-          // handle aditional elements checkboxes
-          if (inputtableAdditinalElments.indexOf(evt.target) > -1) {
+
+          var isFile = false;
+          if (inputTypes.indexOf('file') > -1 && evt.target.type === 'file') {
             input = evt.target;
+            isFile = true;
+          }
+
+          var isSelect = false;
+          if (formElements.indexOf('select') > -1 && evt.target.tagName === 'SELECT') {
+            input = evt.target;
+            isSelect = true;
+          }
+
+          // handle aditional elements checkboxes and radios
+          if (changeableAdditinalElments.indexOf(evt.target) > -1) {
+            if (evt.target.type === 'radio') {
+              if (checkedRadiosNames.indexOf(evt.target.name) === -1) {
+                checkedRadiosNames.push(evt.target.name);
+                input = evt.target;
+              }
+            } else {
+              input = evt.target;
+            }
           }
 
           if (!input) return;
 
           // increase progress
-          if (input.value.length !== 0 && !input.progressChecked) {
+          if (input.checked && !input.progressChecked && !isFile && !isSelect) {
             increaseProgress();
             input.progressChecked = true;
           }
 
           // decrease progress
-          if (input.value.length === 0 && input.progressChecked) {
-            // console.log(input.value.length);
-            // console.log(input.progressChecked);
+          if (!input.checked && input.progressChecked && !isFile && !isSelect) {
             decreaseProgress();
             input.progressChecked = false;
+            if (evt.target.type === 'radio') {
+              var index = checkedRadiosNames.indexOf(evt.target.name);
+              if (index > 1) {
+                checkedRadiosNames.splice(index, 1);
+              }
+            }
           }
-        }); // end text format inputs
 
-        // adding support for checkbox and radio
-        var checkedRadiosNames = [];
-        // preventing of attaching event if we have not changeable elements 
-        if (formElements.indexOf('input') > -1 || formElements.indexOf('select') > -1 || changeableAdditinalElments.length) {
-          form.addEventListener('change', function (evt) {
-            var input = null;
-
-            if (inputTypes.indexOf('checkbox') > -1 && evt.target.type === 'checkbox') {
-              input = evt.target;
-            }
-
-            if (inputTypes.indexOf('radio') > -1 && evt.target.type === 'radio') {
-              if (checkedRadiosNames.indexOf(evt.target.name) === -1) {
-                input = evt.target;
-                checkedRadiosNames.push(evt.target.name);
-              }
-            }
-
-            var isFile = false;
-            if (inputTypes.indexOf('file') > -1 && evt.target.type === 'file') {
-              input = evt.target;
-              isFile = true;
-            }
-
-            var isSelect = false;
-            if (formElements.indexOf('select') > -1 && evt.target.tagName === 'SELECT') {
-              input = evt.target;
-              isSelect = true;
-            }
-
-            // handle aditional elements checkboxes and radios
-            if (changeableAdditinalElments.indexOf(evt.target) > -1) {
-              if (evt.target.type === 'radio') {
-                if (checkedRadiosNames.indexOf(evt.target.name) === -1) {
-                  checkedRadiosNames.push(evt.target.name);
-                  input = evt.target;
-                }
-              } else {
-                input = evt.target;
-              }
-            }
-
-            if (!input) return;
-
-            // increase progress
-            if (input.checked && !input.progressChecked && !isFile && !isSelect) {
+          // handle selects
+          if (isSelect || isFile) {
+            console.dir(input);
+            if (input.value.length && !input.progressChecked) {
               increaseProgress();
               input.progressChecked = true;
             }
-
-            // decrease progress
-            if (!input.checked && input.progressChecked && !isFile && !isSelect) {
+            if (!input.value.length && input.progressChecked) {
               decreaseProgress();
               input.progressChecked = false;
-              if (evt.target.type === 'radio') {
-                var index = checkedRadiosNames.indexOf(evt.target.name);
-                if (index > 1) {
-                  checkedRadiosNames.splice(index, 1);
-                }
-              }
             }
-
-            // handle selects
-            if (isSelect || isFile) {
-              console.dir(input);
-              if (input.value.length && !input.progressChecked) {
-                increaseProgress();
-                input.progressChecked = true;
-              }
-              if (!input.value.length && input.progressChecked) {
-                decreaseProgress();
-                input.progressChecked = false;
-              }
-            }
-          });
-        }
-      })();
+          }
+        });
+      }
     } // end form elements check
 
     function increaseProgress() {
