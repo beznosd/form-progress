@@ -65,7 +65,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     if (additionalElementsToTrack) {
       additionalElementsToTrack.forEach(function (selector) {
         var elements = form.querySelectorAll(selector);
-        console.log(elements);
         elements.forEach(function (element) {
           if (element.type === 'checkbox' || element.type === 'radio') {
             var _changeableAdditinalE;
@@ -185,7 +184,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         // adding support for checkbox and radio
         var checkedRadiosNames = [];
         // preventing of attaching event if we have not changeable elements 
-        if (formElements.indexOf('input') > -1 || changeableAdditinalElments.length) {
+        if (formElements.indexOf('input') > -1 || formElements.indexOf('select') > -1 || changeableAdditinalElments.length) {
           form.addEventListener('change', function (evt) {
             var input = null;
 
@@ -198,6 +197,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 input = evt.target;
                 checkedRadiosNames.push(evt.target.name);
               }
+            }
+
+            var isSelect = false;
+            if (formElements.indexOf('select') > -1 && evt.target.tagName === 'SELECT') {
+              input = evt.target;
+              isSelect = true;
             }
 
             // handle aditional elements checkboxes and radios
@@ -229,6 +234,17 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 if (index > 1) {
                   checkedRadiosNames.splice(index, 1);
                 }
+              }
+            }
+
+            // handle selects
+            if (isSelect) {
+              if (input.value.length) {
+                increaseProgress();
+                input.progressChecked = true;
+              } else {
+                decreaseProgress();
+                input.progressChecked = false;
               }
             }
           });

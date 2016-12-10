@@ -25,6 +25,7 @@ Every day i am adding new features and fixing the buggs.
 * url
 * radio
 * checkbox
+* select
 * textarea
 
 ## Plan

@@ -62,7 +62,6 @@
     if (additionalElementsToTrack) {
       additionalElementsToTrack.forEach((selector) => {
         const elements = form.querySelectorAll(selector);
-        console.log(elements);
         elements.forEach((element) => {
           if (element.type === 'checkbox' || element.type === 'radio') {
             changeableAdditinalElments = changeableAdditinalElments.concat(...elements);
@@ -174,6 +173,7 @@
       const checkedRadiosNames = [];
       // preventing of attaching event if we have not changeable elements 
       if (formElements.indexOf('input') > -1 
+          || formElements.indexOf('select') > -1 
           || changeableAdditinalElments.length) {
         form.addEventListener('change', (evt) => {
           let input = null;
@@ -187,6 +187,12 @@
               input = evt.target;
               checkedRadiosNames.push(evt.target.name);
             }
+          }
+          
+          let isSelect = false;
+          if (formElements.indexOf('select') > -1 && evt.target.tagName === 'SELECT') {
+            input = evt.target;
+            isSelect = true;
           }
 
           // handle aditional elements checkboxes and radios
@@ -218,6 +224,17 @@
               if (index > 1) {
                 checkedRadiosNames.splice(index, 1);
               }
+            }
+          }
+
+          // handle selects
+          if (isSelect) {
+            if (input.value.length) {
+              increaseProgress();
+              input.progressChecked = true;
+            } else {
+              decreaseProgress();
+              input.progressChecked = false;
             }
           }
         });
