@@ -41,8 +41,9 @@
     if (!inputTypes) {
       inputTypes = [
         'text', 'email', 'password', 'number', 'color', 
-        'date', 'datetime', 'month', 'time', 'week', 
-        'tel', 'search', 'url', 'range', 'checkbox'
+        'date', 'datetime', 'month', 'time', 'week',
+        'tel', 'search', 'url', 'range', 'file',
+        'checkbox', 'radio'
       ];
     } else {
       // make all input types lowercase
@@ -71,11 +72,6 @@
         });
       });
     }
-
-    // console.log(changeableAdditinalElments);
-    // console.log(inputtableAdditinalElments);
-    // console.log(formElements);
-    // console.log(inputTypes);
 
     /*
     *  calculating the progress step
@@ -189,6 +185,12 @@
             }
           }
           
+          let isFile = false;
+          if (inputTypes.indexOf('file') > -1 && evt.target.type === 'file') {
+            input = evt.target;
+            isFile = true;
+          }
+          
           let isSelect = false;
           if (formElements.indexOf('select') > -1 && evt.target.tagName === 'SELECT') {
             input = evt.target;
@@ -213,6 +215,7 @@
           if (input.checked && !input.progressChecked) {
             increaseProgress();
             input.progressChecked = true;
+            return;
           }
 
           // decrease progress
@@ -225,16 +228,14 @@
                 checkedRadiosNames.splice(index, 1);
               }
             }
+            return;
           }
 
-          // handle selects
-          if (isSelect) {
+          // handle selects and files
+          if (isSelect || isFile) {
             if (input.value.length) {
               increaseProgress();
               input.progressChecked = true;
-            } else {
-              decreaseProgress();
-              input.progressChecked = false;
             }
           }
         });

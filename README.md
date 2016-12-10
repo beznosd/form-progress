@@ -12,21 +12,22 @@ Every day i am adding new features and fixing the buggs.
 * text
 * email
 * password
+* file
+* radio
+* checkbox
+* select
+* textarea
 * number
 * search
-* color 
+* tel
+* url
 * date
 * datetime-local
 * month
 * week
 * time
+* color 
 * range 
-* tel
-* url
-* radio
-* checkbox
-* select
-* textarea
 
 ## Plan
 

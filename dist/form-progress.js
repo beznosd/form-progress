@@ -42,7 +42,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     }
 
     if (!inputTypes) {
-      inputTypes = ['text', 'email', 'password', 'number', 'color', 'date', 'datetime', 'month', 'time', 'week', 'tel', 'search', 'url', 'range', 'checkbox'];
+      inputTypes = ['text', 'email', 'password', 'number', 'color', 'date', 'datetime', 'month', 'time', 'week', 'tel', 'search', 'url', 'range', 'file', 'checkbox', 'radio'];
     } else {
       // make all input types lowercase
       inputTypes = inputTypes.map(function (item) {
@@ -78,11 +78,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         });
       });
     }
-
-    // console.log(changeableAdditinalElments);
-    // console.log(inputtableAdditinalElments);
-    // console.log(formElements);
-    // console.log(inputTypes);
 
     /*
     *  calculating the progress step
@@ -199,6 +194,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
               }
             }
 
+            var isFile = false;
+            if (inputTypes.indexOf('file') > -1 && evt.target.type === 'file') {
+              input = evt.target;
+              isFile = true;
+            }
+
             var isSelect = false;
             if (formElements.indexOf('select') > -1 && evt.target.tagName === 'SELECT') {
               input = evt.target;
@@ -223,6 +224,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             if (input.checked && !input.progressChecked) {
               increaseProgress();
               input.progressChecked = true;
+              return;
             }
 
             // decrease progress
@@ -235,16 +237,14 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                   checkedRadiosNames.splice(index, 1);
                 }
               }
+              return;
             }
 
-            // handle selects
-            if (isSelect) {
+            // handle selects and files
+            if (isSelect || isFile) {
               if (input.value.length) {
                 increaseProgress();
                 input.progressChecked = true;
-              } else {
-                decreaseProgress();
-                input.progressChecked = false;
               }
             }
           });
