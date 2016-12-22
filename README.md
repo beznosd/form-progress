@@ -31,9 +31,8 @@ Every day i am adding new features and fixing the buggs.
 
 ## Plan
 
-I think in a week it will be ready to use in most simple cases with simple forms. <br/>
-Docs examples of usage will be added soon. <br>
-After a proper testing i will *form-progress* to `npm` and `bower`
+Now i am working on docs and examples. <br>
+After a proper testing i will add *form-progress* to `npm` and `bower`
 
 ## License
 [MIT](https://www.tldrlegal.com/l/mit) Copyright (c) 2016 Dima Beznos
