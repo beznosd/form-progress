@@ -32,7 +32,7 @@ Every day i am adding new features and fixing the buggs.
 ## Plan
 
 Now i am working on docs and examples. <br>
-After a proper testing i will add *form-progress* to `npm` and `bower`
+After a proper testing i will add **form-progress** to `npm` and `bower`
 
 ## License
 [MIT](https://www.tldrlegal.com/l/mit) Copyright (c) 2016 Dima Beznos
