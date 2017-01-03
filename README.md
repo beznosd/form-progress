@@ -35,4 +35,4 @@ Now i am working on docs and examples. <br>
 After a proper testing i will add **form-progress** to `npm` and `bower`
 
 ## License
-[MIT](https://www.tldrlegal.com/l/mit) Copyright (c) 2016 Dima Beznos
+[MIT](https://www.tldrlegal.com/l/mit) Copyright (c) 2016-2017 Dima Beznos
