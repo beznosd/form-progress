@@ -344,5 +344,9 @@
     return Math.round((currentValue * 100) / interval);
   };
 
-  window.formProgress = formProgress;
+  if (typeof module === 'object' && typeof module.exports === 'object') {
+    module.exports = formProgress;
+  } else {
+    window.formProgress = formProgress;
+  }
 }());
