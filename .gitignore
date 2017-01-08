@@ -19,8 +19,8 @@
 nbproject
 Thumbs.db
 
-# NPM packages folder.
+# Project folders and files 
 node_modules/
-
-# Brunch output folder.
 example/
+node/
+.babelrc
