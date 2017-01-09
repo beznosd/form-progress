@@ -4,7 +4,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-;(function () {
+(function (global, factory) {
+  if ((typeof module === 'undefined' ? 'undefined' : _typeof(module)) === 'object' && _typeof(module.exports)) {
+    module.exports = factory();
+  } else if (typeof define === 'function' && define.amd) {
+    define('formProgress', [], function () {
+      return factory();
+    });
+  } else {
+    global.formProgress = factory();
+  }
+})(typeof window !== 'undefined' ? window : undefined, function () {
   var formProgress = function formProgress() {
     var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var form = settings.form,
@@ -309,7 +319,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       }); // end changeable inputs
     }
 
-    function increaseProgress() {
+    var increaseProgress = function increaseProgress() {
       currentProgress += progressStep;
       if (currentProgress > maxValue) {
         currentProgress = maxValue;
@@ -319,9 +329,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       // change value in value container
       var progressInPercents = getPercents(minValue, maxValue, currentProgress);
       updateValueContainer(valueContainer, progressInPercents);
-    }
+    };
 
-    function decreaseProgress() {
+    var decreaseProgress = function decreaseProgress() {
       currentProgress -= progressStep;
       if (currentProgress < initialValue) {
         currentProgress = initialValue;
@@ -331,7 +341,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       // change value in value container
       var progressInPercents = getPercents(minValue, maxValue, currentProgress);
       updateValueContainer(valueContainer, progressInPercents);
-    }
+    };
   }; // end formProgress
 
   var updateValueContainer = function updateValueContainer(container, value) {
@@ -354,11 +364,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     return Math.round(currentValue * 100 / interval);
   };
 
-  if ((typeof module === 'undefined' ? 'undefined' : _typeof(module)) === 'object' && _typeof(module.exports) === 'object') {
-    module.exports = formProgress;
-  } else {
-    window.formProgress = formProgress;
-  }
-})();
+  return formProgress;
+});
 
 //# sourceMappingURL=form-progress.js.map

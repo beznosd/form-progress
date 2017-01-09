@@ -1,4 +1,14 @@
-;(function() {
+(function(global, factory) {
+  if (typeof module === 'object' && typeof module.exports) {
+    module.exports = factory();
+  } else if (typeof define === 'function' && define.amd) {
+    define('formProgress', [], () => {
+      return factory();
+    });
+  } else {
+    global.formProgress = factory();
+  }
+}(typeof window !== 'undefined' ? window : this, () => {
   const formProgress = (settings = {}) => {
     let { 
       form,
@@ -299,7 +309,7 @@
       }); // end changeable inputs
     }
 
-    function increaseProgress() {
+    const increaseProgress = () => {
       currentProgress += progressStep;
       if (currentProgress > maxValue) {
         currentProgress = maxValue;
@@ -309,9 +319,9 @@
       // change value in value container
       const progressInPercents = getPercents(minValue, maxValue, currentProgress);
       updateValueContainer(valueContainer, progressInPercents);
-    }
+    };
 
-    function decreaseProgress() {
+    const decreaseProgress = () => {
       currentProgress -= progressStep;
       if (currentProgress < initialValue) {
         currentProgress = initialValue;
@@ -321,7 +331,7 @@
       // change value in value container
       const progressInPercents = getPercents(minValue, maxValue, currentProgress);
       updateValueContainer(valueContainer, progressInPercents);
-    }
+    };
   }; // end formProgress
 
   const updateValueContainer = (container, value) => {
@@ -344,9 +354,5 @@
     return Math.round((currentValue * 100) / interval);
   };
 
-  if (typeof module === 'object' && typeof module.exports === 'object') {
-    module.exports = formProgress;
-  } else {
-    window.formProgress = formProgress;
-  }
-}());
+  return formProgress;
+}));
