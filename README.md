@@ -5,7 +5,6 @@ Just pass css selector of your form and progress element to a simple function an
 ## The work is going
 
 The plugin is very unstable now and not tested yet. I am working on it. <br/>
-Every day i am adding new features and fixing the buggs.
 
 ## List of supported input types and form elements
 
@@ -31,8 +30,8 @@ Every day i am adding new features and fixing the buggs.
 
 ## Plan
 
-Now i am working on docs and examples. <br>
-After a proper testing i will add **form-progress** to `npm` and `bower`
+Now i am finishing with basic functionality.
+Then will start work on docs and examples. <br>
 
 ## License
 [MIT](https://www.tldrlegal.com/l/mit) Copyright (c) 2016-2017 Dima Beznos
