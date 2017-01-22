@@ -1,10 +1,8 @@
 (function(global, factory) {
-  if (typeof module === 'object' && typeof module.exports) {
+  if (typeof module === 'object' && module.exports) {
     module.exports = factory();
   } else if (typeof define === 'function' && define.amd) {
-    define('formProgress', [], () => {
-      return factory();
-    });
+    define('formProgress', factory);
   } else {
     global.formProgress = factory();
   }
