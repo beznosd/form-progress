@@ -20,7 +20,8 @@
       maxValue,
       units,
       additionalElementsToTrack,
-      valueContainer
+      valueContainer,
+      onChange
     } = settings;
 
     /*
@@ -188,10 +189,13 @@
     progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
 
     // initializing value container
-    const progressInPercents = getPercents(minValue, maxValue, currentProgress);
-    updateValueContainer(valueContainer, progressInPercents);
+    const progressInPercents = _getPercents(minValue, maxValue, currentProgress);
+    _updateValueContainer(valueContainer, progressInPercents);
 
-    console.log(formLength);
+    // fire callback
+    if (progressInPercents > 0 && typeof onChange === 'function') {
+      onChange(null, progressInPercents);
+    }
 
     /*
     * handling the form events
@@ -218,13 +222,13 @@
         
         // increase progress
         if (input.value.length !== 0 && !input.progressChecked) {
-          increaseProgress();
+          increaseProgress(input);
           input.progressChecked = true;
         }
 
         // decrease progress
         if (input.value.length === 0 && input.progressChecked) {
-          decreaseProgress();
+          decreaseProgress(input);
           input.progressChecked = false;
         }
       }); // end inputable inputs
@@ -277,13 +281,13 @@
 
         // increase progress
         if (input.checked && !input.progressChecked && !isFile && !isSelect) {
-          increaseProgress();
+          increaseProgress(input);
           input.progressChecked = true;
         }
 
         // decrease progress
         if (!input.checked && input.progressChecked && !isFile && !isSelect) {
-          decreaseProgress();
+          decreaseProgress(input);
           input.progressChecked = false;
           if (evt.target.type === 'radio') {
             const index = checkedRadiosNames.indexOf(evt.target.name);
@@ -296,18 +300,18 @@
         // handle selects
         if (isSelect || isFile) {
           if (input.value.length && !input.progressChecked) {
-            increaseProgress();
+            increaseProgress(input);
             input.progressChecked = true;
           } 
           if (!input.value.length && input.progressChecked) {
-            decreaseProgress();
+            decreaseProgress(input);
             input.progressChecked = false;
           }
         }
       }); // end changeable inputs
     }
 
-    const increaseProgress = () => {
+    const increaseProgress = (input) => {
       currentProgress += progressStep;
       if (currentProgress > maxValue) {
         currentProgress = maxValue;
@@ -315,11 +319,15 @@
       // change styles for progress elements
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
       // change value in value container
-      const progressInPercents = getPercents(minValue, maxValue, currentProgress);
-      updateValueContainer(valueContainer, progressInPercents);
+      const progressInPercents = _getPercents(minValue, maxValue, currentProgress);
+      _updateValueContainer(valueContainer, progressInPercents);
+      // fire callback
+      if (typeof onChange === 'function') {
+        onChange(input, progressInPercents);
+      }
     };
 
-    const decreaseProgress = () => {
+    const decreaseProgress = (input) => {
       currentProgress -= progressStep;
       if (currentProgress < initialValue) {
         currentProgress = initialValue;
@@ -327,18 +335,22 @@
       // change styles for progress elements
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
       // change value in value container
-      const progressInPercents = getPercents(minValue, maxValue, currentProgress);
-      updateValueContainer(valueContainer, progressInPercents);
+      const progressInPercents = _getPercents(minValue, maxValue, currentProgress);
+      _updateValueContainer(valueContainer, progressInPercents);
+      // fire callback
+      if (typeof onChange === 'function') {
+        onChange(input, progressInPercents);
+      }
     };
   }; // end formProgress
 
-  const updateValueContainer = (container, value) => {
+  const _updateValueContainer = (container, value) => {
     if (container) {
       container.innerHTML = value;
     }
   };
 
-  const getPercents = (minValue, maxValue, currentValue) => {
+  const _getPercents = (minValue, maxValue, currentValue) => {
     let interval;
 
     if (minValue < 0 && maxValue > 0) {

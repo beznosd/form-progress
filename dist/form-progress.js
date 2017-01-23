@@ -5,12 +5,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 (function (global, factory) {
-  if ((typeof module === 'undefined' ? 'undefined' : _typeof(module)) === 'object' && _typeof(module.exports)) {
+  if ((typeof module === 'undefined' ? 'undefined' : _typeof(module)) === 'object' && module.exports) {
     module.exports = factory();
   } else if (typeof define === 'function' && define.amd) {
-    define('formProgress', [], function () {
-      return factory();
-    });
+    define('formProgress', factory);
   } else {
     global.formProgress = factory();
   }
@@ -28,7 +26,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         maxValue = settings.maxValue,
         units = settings.units,
         additionalElementsToTrack = settings.additionalElementsToTrack,
-        valueContainer = settings.valueContainer;
+        valueContainer = settings.valueContainer,
+        onChange = settings.onChange;
 
     /*
     *  initializing of all values
@@ -204,10 +203,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
 
     // initializing value container
-    var progressInPercents = getPercents(minValue, maxValue, currentProgress);
-    updateValueContainer(valueContainer, progressInPercents);
+    var progressInPercents = _getPercents(minValue, maxValue, currentProgress);
+    _updateValueContainer(valueContainer, progressInPercents);
 
-    console.log(formLength);
+    // fire callback
+    if (progressInPercents > 0 && typeof onChange === 'function') {
+      onChange(null, progressInPercents);
+    }
 
     /*
     * handling the form events
@@ -232,13 +234,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
         // increase progress
         if (input.value.length !== 0 && !input.progressChecked) {
-          increaseProgress();
+          increaseProgress(input);
           input.progressChecked = true;
         }
 
         // decrease progress
         if (input.value.length === 0 && input.progressChecked) {
-          decreaseProgress();
+          decreaseProgress(input);
           input.progressChecked = false;
         }
       }); // end inputable inputs
@@ -289,13 +291,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
         // increase progress
         if (input.checked && !input.progressChecked && !isFile && !isSelect) {
-          increaseProgress();
+          increaseProgress(input);
           input.progressChecked = true;
         }
 
         // decrease progress
         if (!input.checked && input.progressChecked && !isFile && !isSelect) {
-          decreaseProgress();
+          decreaseProgress(input);
           input.progressChecked = false;
           if (evt.target.type === 'radio') {
             var index = checkedRadiosNames.indexOf(evt.target.name);
@@ -308,18 +310,18 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         // handle selects
         if (isSelect || isFile) {
           if (input.value.length && !input.progressChecked) {
-            increaseProgress();
+            increaseProgress(input);
             input.progressChecked = true;
           }
           if (!input.value.length && input.progressChecked) {
-            decreaseProgress();
+            decreaseProgress(input);
             input.progressChecked = false;
           }
         }
       }); // end changeable inputs
     }
 
-    var increaseProgress = function increaseProgress() {
+    var increaseProgress = function increaseProgress(input) {
       currentProgress += progressStep;
       if (currentProgress > maxValue) {
         currentProgress = maxValue;
@@ -327,11 +329,15 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       // change styles for progress elements
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
       // change value in value container
-      var progressInPercents = getPercents(minValue, maxValue, currentProgress);
-      updateValueContainer(valueContainer, progressInPercents);
+      var progressInPercents = _getPercents(minValue, maxValue, currentProgress);
+      _updateValueContainer(valueContainer, progressInPercents);
+      // fire callback
+      if (typeof onChange === 'function') {
+        onChange(input, progressInPercents);
+      }
     };
 
-    var decreaseProgress = function decreaseProgress() {
+    var decreaseProgress = function decreaseProgress(input) {
       currentProgress -= progressStep;
       if (currentProgress < initialValue) {
         currentProgress = initialValue;
@@ -339,18 +345,22 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       // change styles for progress elements
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
       // change value in value container
-      var progressInPercents = getPercents(minValue, maxValue, currentProgress);
-      updateValueContainer(valueContainer, progressInPercents);
+      var progressInPercents = _getPercents(minValue, maxValue, currentProgress);
+      _updateValueContainer(valueContainer, progressInPercents);
+      // fire callback
+      if (typeof onChange === 'function') {
+        onChange(input, progressInPercents);
+      }
     };
   }; // end formProgress
 
-  var updateValueContainer = function updateValueContainer(container, value) {
+  var _updateValueContainer = function _updateValueContainer(container, value) {
     if (container) {
       container.innerHTML = value;
     }
   };
 
-  var getPercents = function getPercents(minValue, maxValue, currentValue) {
+  var _getPercents = function _getPercents(minValue, maxValue, currentValue) {
     var interval = void 0;
 
     if (minValue < 0 && maxValue > 0) {
@@ -366,5 +376,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
   return formProgress;
 });
+
 
 //# sourceMappingURL=form-progress.js.map
