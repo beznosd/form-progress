@@ -30,8 +30,7 @@ The plugin is very unstable now and not tested yet. I am working on it. <br/>
 
 ## Plan
 
-Now i am finishing with basic functionality.
-Then will start work on docs and examples. <br>
+Work on docs and examples in process. <br>
 
 ## License
 [MIT](https://www.tldrlegal.com/l/mit) Copyright (c) 2016-2017 Dima Beznos
