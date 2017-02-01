@@ -13,7 +13,7 @@ Add `form-progress.js` from dist folder.
 
 Then use it
 
-```
+```javascript
 formProgress({
   // css selector of form element to track
   form: 'form', // "#progress-form" by default
