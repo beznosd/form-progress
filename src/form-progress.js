@@ -19,8 +19,11 @@
       minValue,
       maxValue,
       units,
-      additionalElementsToTrack,
       valueContainer,
+    } = settings;
+
+    const {
+      additionalElementsToTrack,
       onChange
     } = settings;
 
@@ -189,8 +192,8 @@
     progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
 
     // initializing value container
-    const progressInPercents = _getPercents(minValue, maxValue, currentProgress);
-    _updateValueContainer(valueContainer, progressInPercents);
+    const progressInPercents = getPercents(minValue, maxValue, currentProgress);
+    updateValueContainer(valueContainer, progressInPercents);
 
     // fire callback
     if (progressInPercents > 0 && typeof onChange === 'function') {
@@ -319,8 +322,8 @@
       // change styles for progress elements
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
       // change value in value container
-      const progressInPercents = _getPercents(minValue, maxValue, currentProgress);
-      _updateValueContainer(valueContainer, progressInPercents);
+      const progressInPercents = getPercents(minValue, maxValue, currentProgress);
+      updateValueContainer(valueContainer, progressInPercents);
       // fire callback
       if (typeof onChange === 'function') {
         onChange(input, progressInPercents);
@@ -335,8 +338,8 @@
       // change styles for progress elements
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
       // change value in value container
-      const progressInPercents = _getPercents(minValue, maxValue, currentProgress);
-      _updateValueContainer(valueContainer, progressInPercents);
+      const progressInPercents = getPercents(minValue, maxValue, currentProgress);
+      updateValueContainer(valueContainer, progressInPercents);
       // fire callback
       if (typeof onChange === 'function') {
         onChange(input, progressInPercents);
@@ -344,13 +347,13 @@
     };
   }; // end formProgress
 
-  const _updateValueContainer = (container, value) => {
+  const updateValueContainer = (container, value) => {
     if (container) {
       container.innerHTML = value;
     }
   };
 
-  const _getPercents = (minValue, maxValue, currentValue) => {
+  const getPercents = (minValue, maxValue, currentValue) => {
     let interval;
 
     if (minValue < 0 && maxValue > 0) {

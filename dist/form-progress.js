@@ -25,8 +25,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         minValue = settings.minValue,
         maxValue = settings.maxValue,
         units = settings.units,
-        additionalElementsToTrack = settings.additionalElementsToTrack,
-        valueContainer = settings.valueContainer,
+        valueContainer = settings.valueContainer;
+    var additionalElementsToTrack = settings.additionalElementsToTrack,
         onChange = settings.onChange;
 
     /*
@@ -203,8 +203,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
 
     // initializing value container
-    var progressInPercents = _getPercents(minValue, maxValue, currentProgress);
-    _updateValueContainer(valueContainer, progressInPercents);
+    var progressInPercents = getPercents(minValue, maxValue, currentProgress);
+    updateValueContainer(valueContainer, progressInPercents);
 
     // fire callback
     if (progressInPercents > 0 && typeof onChange === 'function') {
@@ -329,8 +329,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       // change styles for progress elements
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
       // change value in value container
-      var progressInPercents = _getPercents(minValue, maxValue, currentProgress);
-      _updateValueContainer(valueContainer, progressInPercents);
+      var progressInPercents = getPercents(minValue, maxValue, currentProgress);
+      updateValueContainer(valueContainer, progressInPercents);
       // fire callback
       if (typeof onChange === 'function') {
         onChange(input, progressInPercents);
@@ -345,8 +345,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       // change styles for progress elements
       progress[proggressAttr][proggressStyleProperty] = currentProgress + units;
       // change value in value container
-      var progressInPercents = _getPercents(minValue, maxValue, currentProgress);
-      _updateValueContainer(valueContainer, progressInPercents);
+      var progressInPercents = getPercents(minValue, maxValue, currentProgress);
+      updateValueContainer(valueContainer, progressInPercents);
       // fire callback
       if (typeof onChange === 'function') {
         onChange(input, progressInPercents);
@@ -354,13 +354,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     };
   }; // end formProgress
 
-  var _updateValueContainer = function _updateValueContainer(container, value) {
+  var updateValueContainer = function updateValueContainer(container, value) {
     if (container) {
       container.innerHTML = value;
     }
   };
 
-  var _getPercents = function _getPercents(minValue, maxValue, currentValue) {
+  var getPercents = function getPercents(minValue, maxValue, currentValue) {
     var interval = void 0;
 
     if (minValue < 0 && maxValue > 0) {
