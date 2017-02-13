@@ -12,7 +12,9 @@ Add `form-progress.js` from dist folder.
 `<script src="form-progress.js"></script>`
 
 Then use it
-```formProgress({
+
+```javascript
+formProgress({
   // css selector of form element to track
   form: 'form', // "#progress-form" by default
 
@@ -49,8 +51,14 @@ Then use it
   // you can pass here a css selector of that checkbox
   // and omit other checkboxes by not passing 'checkbox' value to "inputTypes" setting above
   // should be an array of instances of form elements(input, textarea, select)
-  additionalElementsToTrack: [], // by default an empty array          
-});```
+  additionalElementsToTrack: [], // by default an empty array,
+  
+  // will be fired every time when progress of form is changed
+  onChange: function(currentElement, progressPercents) {
+    document.getElementById('example').setAttribute('data-value', progressPercents);
+  }
+});
+```
 
 ## List of supported input types and form elements
 
