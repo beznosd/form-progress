@@ -104,9 +104,9 @@
 
     // find the count of all elements and inputs which we need to track
     let formLength = 0;
-    let existingElements = [];
+    let existingElements = []; // all elements that should be tracked
+    const radiosNames = []; // keep here only different radio names
 
-    const radiosNames = [];
     formElements.forEach((formElementType) => {
       if (formElementType === 'input') {
         inputTypes.forEach((inputType) => {
@@ -132,8 +132,9 @@
     });
 
     // if aditional elements matches default input types, do not increase formLength
+    let aditionalElements = [];
     if (additionalElementsToTrack) {
-      const aditionalElements = [...changeableAdditinalElments, ...inputtableAdditinalElments];
+      aditionalElements = [...changeableAdditinalElments, ...inputtableAdditinalElments];
       let aditionalElementsCount = aditionalElements.length;
 
       aditionalElements.forEach((aditionalElement) => {
@@ -158,9 +159,10 @@
     // calculate initial value, depends on already filled form elements
     let allElements = [];
     if (additionalElementsToTrack) {
-      allElements = [...changeableAdditinalElments, ...inputtableAdditinalElments];
+      allElements = [...aditionalElements, ...existingElements];
+    } else {
+      allElements = [...existingElements];
     }
-    allElements = [...allElements, ...existingElements];
 
     const trackedElements = [];
     const checkedRadiosNames = [];

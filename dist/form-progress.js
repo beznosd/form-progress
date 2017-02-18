@@ -109,9 +109,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
     // find the count of all elements and inputs which we need to track
     var formLength = 0;
-    var existingElements = [];
+    var existingElements = []; // all elements that should be tracked
+    var radiosNames = []; // keep here only different radio names
 
-    var radiosNames = [];
     formElements.forEach(function (formElementType) {
       if (formElementType === 'input') {
         inputTypes.forEach(function (inputType) {
@@ -141,9 +141,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     });
 
     // if aditional elements matches default input types, do not increase formLength
+    var aditionalElements = [];
     if (additionalElementsToTrack) {
       (function () {
-        var aditionalElements = [].concat(_toConsumableArray(changeableAdditinalElments), _toConsumableArray(inputtableAdditinalElments));
+        aditionalElements = [].concat(_toConsumableArray(changeableAdditinalElments), _toConsumableArray(inputtableAdditinalElments));
         var aditionalElementsCount = aditionalElements.length;
 
         aditionalElements.forEach(function (aditionalElement) {
@@ -169,9 +170,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     // calculate initial value, depends on already filled form elements
     var allElements = [];
     if (additionalElementsToTrack) {
-      allElements = [].concat(_toConsumableArray(changeableAdditinalElments), _toConsumableArray(inputtableAdditinalElments));
+      allElements = [].concat(_toConsumableArray(aditionalElements), _toConsumableArray(existingElements));
+    } else {
+      allElements = [].concat(_toConsumableArray(existingElements));
     }
-    allElements = [].concat(_toConsumableArray(allElements), _toConsumableArray(existingElements));
 
     var trackedElements = [];
     var checkedRadiosNames = [];
