@@ -218,6 +218,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     */
 
     // adding listener for text format inputs
+    // check if we have inputable elements 
     if (formElements.indexOf('input') > -1 || formElements.indexOf('textarea') > -1 || inputtableAdditinalElments.length) {
       form.addEventListener('input', function (evt) {
         var input = null;
@@ -245,11 +246,11 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           decreaseProgress(input);
           input.progressChecked = false;
         }
-      }); // end inputable inputs
-    }
+      }); // end inputable inputs event listener
+    } // end check for inputable inputs existance
 
     // adding support for checkbox and radio
-    // preventing of attaching event if we have not changeable elements 
+    // check if we have changeable elements
     if (formElements.indexOf('input') > -1 || formElements.indexOf('select') > -1 || changeableAdditinalElments.length) {
       form.addEventListener('change', function (evt) {
         var input = null;
@@ -291,7 +292,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
         if (!input) return;
 
-        // increase progress
+        // increase progress radios and checkboxes (selects and files below)
         if (input.checked && !input.progressChecked && !isFile && !isSelect) {
           increaseProgress(input);
           input.progressChecked = true;
@@ -309,7 +310,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           }
         }
 
-        // handle selects
+        // handle selects and files
         if (isSelect || isFile) {
           if (input.value.length && !input.progressChecked) {
             increaseProgress(input);
@@ -320,8 +321,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             input.progressChecked = false;
           }
         }
-      }); // end changeable inputs
-    }
+      }); // end changeable inputs eventlistener
+    } // end check for changeable inputs existance
 
     var increaseProgress = function increaseProgress(input) {
       currentProgress += progressStep;

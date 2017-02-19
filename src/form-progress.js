@@ -207,6 +207,7 @@
     */
     
     // adding listener for text format inputs
+    // check if we have inputable elements 
     if (formElements.indexOf('input') > -1 
         || formElements.indexOf('textarea') > -1
         || inputtableAdditinalElments.length) {
@@ -236,11 +237,11 @@
           decreaseProgress(input);
           input.progressChecked = false;
         }
-      }); // end inputable inputs
-    }
+      }); // end inputable inputs event listener
+    } // end check for inputable inputs existance
 
     // adding support for checkbox and radio
-    // preventing of attaching event if we have not changeable elements 
+    // check if we have changeable elements
     if (formElements.indexOf('input') > -1 
         || formElements.indexOf('select') > -1 
         || changeableAdditinalElments.length) {
@@ -284,7 +285,7 @@
         
         if (!input) return;
 
-        // increase progress
+        // increase progress radios and checkboxes (selects and files below)
         if (input.checked && !input.progressChecked && !isFile && !isSelect) {
           increaseProgress(input);
           input.progressChecked = true;
@@ -302,7 +303,7 @@
           }
         }
 
-        // handle selects
+        // handle selects and files
         if (isSelect || isFile) {
           if (input.value.length && !input.progressChecked) {
             increaseProgress(input);
@@ -313,8 +314,8 @@
             input.progressChecked = false;
           }
         }
-      }); // end changeable inputs
-    }
+      }); // end changeable inputs eventlistener
+    } // end check for changeable inputs existance
 
     const increaseProgress = (input) => {
       currentProgress += progressStep;
