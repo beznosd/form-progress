@@ -17,15 +17,15 @@ Then use it
 formProgress({
   // css selector of form element to track
   form: 'form', // "#progress-form" by default
-
-  // array of types of inputs you want to track ['text', 'email', 'checkbox']
-  inputTypes: ['text'], // by default all types except 'submit'
-
+  
+  // progress element to show the progress
+  progress: '.progress-element', // "#progress-element" by default
+  
   // array of types of form elements you want to track ['input', 'textarea', 'select']
   formElements: ['input', 'textarea', 'select'],
 
-  // progress element to show the progress
-  progress: '.progress-element', // "#progress-element" by default
+  // array of types of inputs you want to track ['text', 'email', 'checkbox']
+  inputTypes: ['text'], // by default all types except 'submit'
 
   // attribute of proggress element to change, 
   // for now only works 'style' setting, later will be added support for custom atributes
@@ -36,19 +36,16 @@ formProgress({
   proggressStyleProperty: 'width', // by default 'width'
 
   // units which you want to change in style of your progress elements
-  // `unit` make sense only if `prgressAttr` equals to `style` 
+  // `unit` make sense in case of selecting 'style' in progressAttr
   unit: '%', // (%, px, em, etc units you are using to set width of progress in styles)
-
-  // initialValue will be calculated depends on filled by default form fields
-  // initialValue: 0, // by default 0, can be negative
 
   minValue: 0, // by default 0, can be negative
   maxValue: 100, // by default 100, can be negative
 
   // may be useful if you don't want to track checkboxes, 
-  // because usualy they contain not required form data
-  // but you need to track one checkbox related to terms or license
-  // you can pass here a css selector of that checkbox
+  // because usually they contain not required form data
+  // but if you need to track one checkbox related to terms or license
+  // you may pass here a css selector of that checkbox
   // and omit other checkboxes by not passing 'checkbox' value to "inputTypes" setting above
   // should be an array of instances of form elements(input, textarea, select)
   additionalElementsToTrack: [], // by default an empty array,
@@ -59,6 +56,8 @@ formProgress({
   }
 });
 ```
+
+Initial value will be calculated depends on filled by default form fields.
 
 ## List of supported input types and form elements
 
