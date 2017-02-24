@@ -2,16 +2,12 @@
 A form completion progress plugin. Without any dependencies. Your progress and your design. Any limitations!<br/>
 Just pass css selector of your form and progress element to a simple function and you are ready to go!
 
-## The work is going
-
-The plugin is very unstable now and not tested yet. I am working on it. <br/>
-
 ## Usage
 
-Add `form-progress.js` from dist folder.
+1. Add file `form-progress.js` from `dist` folder to your page.
 `<script src="form-progress.js"></script>`
 
-Then use it
+2. Run the function `formProgress` and pass to it object with settings
 
 ```javascript
 formProgress({
