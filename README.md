@@ -11,49 +11,53 @@ Just pass css selector of your form and progress element to a simple function an
 
 ```javascript
 formProgress({
-  // css selector of form element to track
-  form: 'form', // "#progress-form" by default
+  // selector of form element to track
+  // default value: '#progress-form'
+  form: '.my-awesome-form',
   
   // progress element to show the progress
-  progress: '.progress-element', // "#progress-element" by default
+  // default value: '#progress-element'
+  progress: '.my-awesome-progress',
   
-  // array of types of form elements you want to track ['input', 'textarea', 'select']
+  // array of types of form elements which you want to track
+  // default value: ['input', 'textarea', 'select']
   formElements: ['input', 'textarea', 'select'],
 
-  // array of types of inputs you want to track ['text', 'email', 'checkbox']
+  // array of input types which you want to track
+  // default value: all input types (text, radio, checkbox, date, etc.)
+  // see list of supported types below in docs
   inputTypes: ['text'], // by default all types except 'submit'
-
-  // attribute of proggress element to change, 
-  // for now only works 'style' setting, later will be added support for custom atributes
-  proggressAttr: 'style', // by default 'style'
-
-  // in case of selecting 'style' in progressAttr
-  // 'width, margin, padding etc.'
+  
+  // plugin will change the 'style' attribute of progress element (see setting 'progress' above)
+  // default value: 'width'
+  // you can pass here any style property (margins, paddings etc.)
   proggressStyleProperty: 'width', // by default 'width'
 
-  // units which you want to change in style of your progress elements
-  // `unit` make sense in case of selecting 'style' in progressAttr
-  unit: '%', // (%, px, em, etc units you are using to set width of progress in styles)
+  // units which will be applied to the style of progress elements (%, px, em, etc)
+  // default value: '%'
+  unit: '%',
 
   minValue: 0, // by default 0, can be negative
   maxValue: 100, // by default 100, can be negative
-
-  // may be useful if you don't want to track checkboxes, 
-  // because usually they contain not required form data
-  // but if you need to track one checkbox related to terms or license
-  // you may pass here a css selector of that checkbox
-  // and omit other checkboxes by not passing 'checkbox' value to "inputTypes" setting above
-  // should be an array of instances of form elements(input, textarea, select)
+  
+  // array of selectors of elements which should be tracked anyway
+  // even if they were omitted in the settings 'formElements' or 'inputTypes'
   additionalElementsToTrack: [], // by default an empty array,
   
-  // will be fired every time when progress of form is changed
+  // will be fired every time when progress of form is being changed
   onChange: function(currentElement, progressPercents) {
+    // feed some value container, which shows the completeness percentage
     document.getElementById('example').setAttribute('data-value', progressPercents);
   }
 });
 ```
 
 Initial value will be calculated depends on filled by default form fields.
+
+### additionalElementsToTrack
+May be useful if you don't want to track checkboxes because usually they contain not required form data.
+But if you need to track one checkbox related to terms or license you may pass here a css selector of that checkbox
+and omit other checkboxes by not passing 'checkbox' value to setting 'inputTypes'.
 
 ## List of supported input types and form elements
 
