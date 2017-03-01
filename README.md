@@ -55,9 +55,10 @@ formProgress({
 Initial value will be calculated depends on filled by default form fields.
 
 ### additionalElementsToTrack
-May be useful if you don't want to track checkboxes because usually they contain not required form data.
-But if you need to track one checkbox related to terms or license you may pass here a css selector of that checkbox
-and omit other checkboxes by not passing 'checkbox' value to setting 'inputTypes'.
+May be useful if you don't want to track all exemplars of some elements or input types, but you need just some of them to track.
+
+For example checkboxes usually are required in forms.</br>
+But if you need to track one checkbox related to terms or license. You may pass to this setting a css selector of that checkbox. And omit other checkboxes by not passing 'checkbox' value to setting 'inputTypes'.
 
 ## List of supported input types and form elements
 
