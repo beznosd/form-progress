@@ -60,16 +60,20 @@ May be useful if you don't want to track all exemplars of some elements or input
 For example checkboxes usually are required in forms.</br>
 But if you need to track one checkbox related to terms or license. You may pass to this setting a css selector of that checkbox. And omit other checkboxes by not passing 'checkbox' value to setting 'inputTypes'.
 
-## List of supported input types and form elements
+## List of supported form elements
+
+* input
+* select
+* textarea
+
+## List of supported input types
 
 * text
 * email
 * password
 * file
 * radio
-* select
 * checkbox
-* textarea
 * number
 * search
 * tel
