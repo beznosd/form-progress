@@ -89,6 +89,8 @@ But if you need to track one checkbox related to terms or license. You may pass 
 ## Plan
 
 Work on docs and examples in process. <br>
+Test it well <br>
+Create examples for progress bars of popular css frameworks
 
 ## License
 [MIT](https://www.tldrlegal.com/l/mit) Copyright (c) 2016-2017 Dima Beznos
